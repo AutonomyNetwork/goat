@@ -13,12 +13,11 @@ from eth_account.signers.local import LocalAccount
 from eth_account import Account
 
 from goat_adapters.langchain import get_on_chain_tools
-from goat_plugins.erc20.token import PEPE, USDC
+from goat_plugins.erc20.token import  USDC, USDT, WBTC, ETH
 from goat_plugins.erc20 import erc20, ERC20PluginOptions
 from goat_wallets.evm import send_eth
 from goat_wallets.web3 import Web3EVMWalletClient
 from goat_plugins.coingecko import coingecko, CoinGeckoPluginOptions
-from goat_plugins.rugcheck import rugcheck
 
 # Initialize Web3 and account
 w3 = Web3(Web3.HTTPProvider(os.getenv("RPC_PROVIDER_URL")))
@@ -52,7 +51,7 @@ def main():
         wallet=Web3EVMWalletClient(w3),
         plugins=[
             send_eth(),
-            erc20(options=ERC20PluginOptions(tokens=[USDC, PEPE])),
+            erc20(options=ERC20PluginOptions(tokens=[USDC, USDT, WBTC , ETH])),
             coingecko(options=CoinGeckoPluginOptions(api_key=os.getenv("COINGECKO_API_KEY")))
         ],
     )

@@ -17,7 +17,7 @@ class TransferParameters(BaseModel):
         description="The address of the token to get the balance of"
     )
     to: str = Field(description="The address to transfer the token to")
-    amount: str = Field(description="The amount of tokens to transfer in base units")
+    amount: int = Field(description="The amount of tokens to transfer in base units")
 
 
 class GetTokenTotalSupplyParameters(BaseModel):
@@ -39,7 +39,7 @@ class ApproveParameters(BaseModel):
         description="The address of the token to get the balance of"
     )
     spender: str = Field(description="The address to approve the allowance to")
-    amount: str = Field(description="The amount of tokens to approve in base units")
+    amount: int = Field(description="The amount of tokens to approve in base units")
 
 
 class TransferFromParameters(BaseModel):

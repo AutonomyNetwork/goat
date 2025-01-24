@@ -31,6 +31,24 @@ PEPE: Token = {
     },
 }
 
+DEDE: Token = {
+    "decimals": 18,
+    "symbol": "DEDE",
+    "name": "DEDE",
+    "chains": {
+        11155111: {"contractAddress": "0xa4cd5DCF7A1106BC2be45e3280B376D2096346CF"},
+    },
+}
+
+DUMMY: Token = {
+    "decimals": 18,
+    "symbol": "DUMMY",
+    "name": "Dummy",
+    "chains": {
+        200901: {"contractAddress": "0x11c683DEB1d28C6b48725e7d02fB9FE89D1CfE04"},
+    },
+}
+
 USDC: Token = {
     "decimals": 6,
     "symbol": "USDC",
@@ -43,6 +61,34 @@ USDC: Token = {
         84532: {"contractAddress": "0x036CbD53842c5426634e7929541eC2318f3dCF7e"},
         11155111: {"contractAddress": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238"},
         34443: {"contractAddress": "0xd988097fb8612cc24eeC14542bC03424c656005f"},
+        200901: {"contractAddress": "0xf8c374ce88a3be3d374e8888349c7768b607c755"},
+    },
+}
+
+ETH: Token = {
+    "decimals": 18,
+    "symbol": "ETH",
+    "name": "Ethereum",
+    "chains": {
+        200901: {"contractAddress": "0xef63d4e178b3180beec9b0e143e0f37f4c93f4c2"},
+    },
+}
+
+USDT: Token = {
+    "decimals": 6,
+    "symbol": "USDT",
+    "name": "USDT",
+    "chains": {
+        200901: {"contractAddress": "0xfe9f969faf8ad72a83b761138bf25de87eff9dd2"},
+    },
+}
+
+WBTC: Token = {
+    "decimals": 18,
+    "symbol": "WBTC",
+    "name": "Wrapped Bitcoin",
+    "chains": {
+        200901: {"contractAddress": "0xff204e2681a6fa0e2c3fade68a1b28fb90e4fc5f"},
     },
 }
 

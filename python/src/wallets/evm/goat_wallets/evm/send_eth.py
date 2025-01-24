@@ -69,4 +69,18 @@ def get_chain_token(chain_id: int) -> Dict[str, str | int]:
                     "name": native_currency["name"],
                     "decimals": native_currency["decimals"],
                 }
+    if chain_id == 200901:
+        return {
+            "symbol": "BTC",
+            "name": "Bitlayer Mainnet",
+            "decimals": 18,
+        }
+    if chain_id == 200810:
+        return {
+            "symbol": "BTC",
+            "name": "Bitlayer Testnet",
+            "decimals": 18,
+        }
+    
+    
     raise Exception(f"Unsupported EVM chain ID: {chain_id}")

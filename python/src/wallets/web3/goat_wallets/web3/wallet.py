@@ -36,6 +36,9 @@ class Web3EVMWalletClient(EVMWalletClient):
             options.paymaster["input"] if options and options.paymaster else None
         )
 
+        from web3.middleware import geth_poa_middleware
+        self._web3.middleware_onion.inject(geth_poa_middleware, layer=0)
+
     def get_address(self) -> str:
         if not self._web3.eth.default_account:
             return ""
@@ -83,15 +86,21 @@ class Web3EVMWalletClient(EVMWalletClient):
 
     def send_transaction(self, transaction: EVMTransaction) -> Dict[str, str]:
         """Send a transaction on the EVM chain."""
+
+
         if not self._web3.eth.default_account:
             raise ValueError("No account connected")
 
         to_address = self.resolve_address(transaction["to"])
+        if self._web3.eth.chain_id == 200901:
+            paymaster_address = None
+            paymaster_input = None
+        else:
+            # Get paymaster options
+            paymaster = transaction.get("options", {}).get("paymaster", {})
+            paymaster_address = paymaster.get("address", self._default_paymaster_address)
+            paymaster_input = paymaster.get("input", self._default_paymaster_input)
 
-        # Get paymaster options
-        paymaster = transaction.get("options", {}).get("paymaster", {})
-        paymaster_address = paymaster.get("address", self._default_paymaster_address)
-        paymaster_input = paymaster.get("input", self._default_paymaster_input)
 
         # Simple ETH transfer
         if not transaction.get("abi"):
@@ -105,8 +114,9 @@ class Web3EVMWalletClient(EVMWalletClient):
                 tx_params["paymaster"] = to_checksum_address(paymaster_address)
                 tx_params["paymasterInput"] = paymaster_input
 
+
             tx_hash = self._web3.eth.send_transaction(tx_params)
-            return self._wait_for_receipt(HexStr(tx_hash.to_0x_hex()))
+            return self._wait_for_receipt(tx_hash=tx_hash.hex())
 
         # Contract call
         function_name = transaction.get("functionName")
@@ -116,6 +126,7 @@ class Web3EVMWalletClient(EVMWalletClient):
         contract = self._web3.eth.contract(
             address=to_checksum_address(to_address), abi=transaction["abi"]  # type: ignore
         )
+
 
         # Build the transaction
         contract_function = getattr(contract.functions, function_name)
@@ -127,14 +138,14 @@ class Web3EVMWalletClient(EVMWalletClient):
             "value": Wei(transaction.get("value", 0)),
         }
 
+
         if paymaster_address and paymaster_input:
             tx_params["paymaster"] = to_checksum_address(paymaster_address)
             tx_params["paymasterInput"] = paymaster_input
 
         # Send the transaction
         tx_hash = contract_function(*args).transact(tx_params)
-
-        return self._wait_for_receipt(HexStr(tx_hash.to_0x_hex()))
+        return self._wait_for_receipt(tx_hash.hex())
 
     def read(self, request: EVMReadRequest) -> EVMReadResult:
         """Read data from a smart contract."""
@@ -158,6 +169,16 @@ class Web3EVMWalletClient(EVMWalletClient):
         decimals = 18  # ETH decimals
         symbol = "ETH"
         name = "Ether"
+
+        if chain_id == 200901:
+            symbol = "BTC"
+            name = "Bitlayer Mainnet"
+            decimals = 18
+
+        if chain_id == 200810:
+            symbol = "BTC"
+            name = "Bitlayer Testnet"
+            decimals = 18
 
         formatted_balance = Web3.from_wei(balance_wei, "ether")
 
