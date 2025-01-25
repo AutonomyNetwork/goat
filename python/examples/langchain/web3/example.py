@@ -40,7 +40,7 @@ def main():
     prompt = ChatPromptTemplate.from_messages(
     [
         ("system", "You are a helpful assistant"),
-        ("placeholder", "{chat_history}"),
+        ("placeholder", "{chat_history}"),  # Prepend "Chat history:" to chat_history
         ("human", "{input}"),
         ("placeholder", "{agent_scratchpad}"),
     ]
@@ -58,7 +58,8 @@ def main():
     
     agent = create_tool_calling_agent(llm, tools, prompt)
     agent_executor = AgentExecutor(agent=agent, tools=tools, handle_parsing_errors=True, verbose=True)
-    
+    chat_history = []  # Initialize an empty list to track chat history
+
     while True:
         user_input = input("\nYou: ").strip()
         
@@ -67,14 +68,26 @@ def main():
             break
             
         try:
+            chat_history.append({"role": "human", "content": user_input})
+
             response = agent_executor.invoke({
                 "input": user_input,
+                "chat_history": chat_history,  # Static text and formatted chat history
+
             })
 
             print("\nAssistant:", response["output"])
         except Exception as e:
             print("\nError:", str(e))
 
-
+def format_chat_history(chat_history):
+    """
+    Format the chat history into the correct string format for the prompt.
+    Each entry in chat_history is a dictionary with 'role' and 'content' keys.
+    """
+    formatted_history = []
+    for message in chat_history:
+        formatted_history.append(f"{message['role'].capitalize()}: {message['content']}")
+    return "\n".join(formatted_history)
 if __name__ == "__main__":
     main()
