@@ -17,5 +17,9 @@ poetry install
 ## Usage
 
 ```
+python api/chat_api.py
+```
+
+```
 poetry run example.py
 ```

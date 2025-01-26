@@ -6,8 +6,9 @@ from pydantic import BaseModel
 from services.agent.chat import ChatAgent
 from fastapi import APIRouter, Depends, HTTPException
 
-class UserMessage(BaseModel):
+class UserRequest(BaseModel):
     userId: str
+    userSmartWalletAddress:str
     userMessage: str
     
 
@@ -31,7 +32,7 @@ def health():
 @app.post("/chat")
 async def chat(
     request: Request,
-    userMessage: UserMessage,
+    userRequest: UserRequest,
     chat_agent: ChatAgent = Depends(get_chat_agent)
 ):
     api_key = request.headers.get("x-api-key")
@@ -41,9 +42,9 @@ async def chat(
         print(api_key,ORIGINAL_API_KEY,len(api_key),len(ORIGINAL_API_KEY))
         raise HTTPException(status_code=403, detail="Invalid API Key")
 
-    if not userMessage.userId or not userMessage.userMessage:
+    if not userRequest.userId or not userRequest.userMessage or not userRequest.userSmartWalletAddress:
         raise HTTPException(status_code=400, detail="Invalid input")
-    response = await chat_agent.chat_handler(userMessage.userMessage, userMessage.userId)
+    response = await chat_agent.chat_handler(userRequest.userMessage, userRequest.userId,userRequest.userSmartWalletAddress)
     return {"response": response}
 
 if __name__ == "__main__":

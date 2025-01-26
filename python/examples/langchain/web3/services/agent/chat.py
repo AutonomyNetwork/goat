@@ -22,7 +22,7 @@ from services.agent.prompt import SystemPrompt
 
 from services.memory.mem0 import MemoryManager
 from config import AGENT_ID
-
+from services.user.user import get_user_wallet_client,get_user_private_key
 
 class ChatAgent:
     def __init__(self):
@@ -32,7 +32,7 @@ class ChatAgent:
 
 
 
-    async def chat_handler(self, user_message:str,user_id:str):
+    async def chat_handler(self, user_message:str,user_id:str,user_smart_wallet:str):
         try:
             sytem_prompt= SystemPrompt.get_blay_system_prompt()
             prompt = ChatPromptTemplate.from_messages(
@@ -44,7 +44,8 @@ class ChatAgent:
                 ]
             )
             print(prompt,"PROMPT")
-            tools = await self.get_agent_tools()
+
+            tools = await self.get_agent_tools(self.w3,user_id)
             agent = create_tool_calling_agent(self.llm, tools, prompt)
             agent_executor = AgentExecutor(agent=agent, tools=tools, handle_parsing_errors=True, verbose=True)
             recent_memories =  await self.mem0.search_recent_user_memory(user_id=user_id,agent_id=AGENT_ID)
@@ -72,10 +73,11 @@ class ChatAgent:
             print(e)
             raise
 
-    async def get_agent_tools(self):
-
+    async def get_agent_tools(self,w3,user_id):
+        print(w3,"W##############")
+        final_w3 = await get_user_wallet_client(w3,user_id) 
         tools = get_on_chain_tools(
-        wallet=Web3EVMWalletClient(self.w3),
+        wallet=Web3EVMWalletClient(final_w3),
         plugins=[
             send_eth(),
             erc20(options=ERC20PluginOptions(tokens=[USDC, USDT, WBTC , ETH])),
@@ -84,6 +86,6 @@ class ChatAgent:
         )
         return tools
 
-if __name__ == "__main__":
-    chat=Chat()
-    chat.chat_handler("hello","123")
+# if __name__ == "__main__":
+#     chat=Chat()
+#     chat.chat_handler("hello","123")
