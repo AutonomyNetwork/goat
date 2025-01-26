@@ -23,3 +23,15 @@ python api/chat_api.py
 ```
 poetry run example.py
 ```
+
+
+```
+ sudo apt install python3.12-dev python3.12-venv
+
+sudo apt-get install python3.12-dev
+
+poetry install
+
+
+
+```
